@@ -40,7 +40,6 @@ def main():
 
     #print(c_wgmma)
     #print(c_torch)
-    import pdb; pdb.set_trace()
 
     print("allclose?", torch.allclose(c_wgmma, c_torch, atol=1e-3, rtol=1e-3))
 
