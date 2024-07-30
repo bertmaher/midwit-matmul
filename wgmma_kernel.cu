@@ -1,3 +1,5 @@
+#include "wgmma_kernel.h"
+
 #include <cuda_bf16.h>
 
 #include <cassert>
@@ -66,19 +68,6 @@ __global__ void mma_wgmma(__nv_bfloat16* a, __nv_bfloat16* b, __nv_bfloat16* c) 
   wgmma_commit_group();
   wgmma_wait_group();
 
-  // for (int i = 0; i < 128; i++) {
-  //   c[i + 128 * tid] = __float2bfloat16(c_regs[i]);
-  //   //c[tid * 2 + 128 * i] = __float2bfloat16(c_regs[2 * i]);
-  //   //c[tid * 2 + 128 * i + 1] = __float2bfloat16(c_regs[2 * i + 1]);
-  // }
-  // for (int i = 0; i < 32; i++) {
-  //   c[tid / 32 * 16 * 256 + 0] = __float2bfloat16(c_regs[4 * i]);
-  //   c[tid / 32 * 16 * 256, 1] = __float2bfloat16(c_regs[4 * i + 1]);
-
-  //   c[(tid / 32 * 16 + 8) * 256, 0] = __float2bfloat16(c_regs[4 * i + 2]);
-  //   c[(tid / 32 * 16 + 8) * 256, 1] = __float2bfloat16(c_regs[4 * i + 3]);
-  // }
-
   for (int i = 0; i < 128; i++) {
     c[tid * bdim + i] = __float2bfloat16(c_regs[i]);
   }
@@ -114,7 +103,6 @@ __global__ void mma_naive(__nv_bfloat16* a, __nv_bfloat16* b, __nv_bfloat16* c) 
     }
   }
 }
-
 
 void wgmma_kernel(void* a, void* b, void* c, int m, int n, int k) {
   assert(m == 64);

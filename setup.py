@@ -4,17 +4,13 @@ from setuptools import setup
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension
 
 setup(
-    name="cutlass",
+    name="wgmma",
     ext_modules=[
         CUDAExtension(
-            "cutlass",
+            "wgmma",
             [
-                "cutlass.cpp",
+                "wgmma.cpp",
                 "wgmma_kernel.cu",
-                "cutlass_kernel.cu",
-            ],
-            include_dirs=[
-                "/data/users/bertrand/cutlass/include",
             ],
         )
     ],
