@@ -80,7 +80,7 @@ __global__ void mma_wgmma(__nv_bfloat16* a, __nv_bfloat16* b, __nv_bfloat16* c) 
   // }
 
   for (int i = 0; i < 128; i++) {
-    c[tid + i * bdim] = __float2bfloat16(c_regs[i]);
+    c[tid * bdim + i] = __float2bfloat16(c_regs[i]);
   }
 #endif
 }
