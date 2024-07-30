@@ -1,42 +1,28 @@
 load("@fbcode_macros//build_defs:cpp_library.bzl", "cpp_library")
 load("@fbcode_macros//build_defs:python_binary.bzl", "python_binary")
-load("@fbcode_macros//build_defs:python_library.bzl", "python_library")
 load("//tools/build/buck:nvcc_flags.bzl", "get_nvcc_arch_args")
 
 cpp_library(
-    name = "cutlass_kernel",
+    name = "wgmma_kernel",
     srcs = [
-        "cutlass_kernel.cu",
+        "wgmma_kernel.cu",
     ],
     headers = [
-        "cutlass_kernel.h",
+        "wgmma_kernel.h",
     ],
     nvcc_flags = get_nvcc_arch_args(),
-    deps = [
-        "fbsource//third-party/cutlass-3:cutlass-3",
-    ],
 )
 
 cpp_library(
-    name = "cutlass",
+    name = "wgmma",
     srcs = [
-        "cutlass.cpp",
+        "wgmma.cpp",
     ],
     supports_python_dlopen = True,
     deps = [
-        ":cutlass_kernel",
+        ":wgmma_kernel",
         "//caffe2:torch-cpp",  # @manual
         "//caffe2:torch_extension",  # @manual
-    ],
-)
-
-python_library(
-    name = "triton_kernel",
-    srcs = [
-        "triton_kernel.py",
-    ],
-    deps = [
-        "//caffe2:torch",
     ],
 )
 
@@ -46,30 +32,11 @@ python_binary(
         "test.py",
     ],
     cpp_deps = [
-        ":cutlass",
+        ":wgmma",
     ],
-    main_function = "scripts.bertrand.tf32_gemm.test.main",
+    main_function = "scripts.bertrand.midwit_matmul.test.main",
     par_style = "xar",
     deps = [
-        ":triton_kernel",
-        "//caffe2:torch",
-    ],
-)
-
-python_binary(
-    name = "benchmark",
-    srcs = [
-        "benchmark.py",
-    ],
-    cpp_deps = [
-        ":cutlass",
-    ],
-    main_function = "scripts.bertrand.tf32_gemm.benchmark.main",
-    par_style = "xar",
-    deps = [
-        "fbsource//third-party/pypi/matplotlib:matplotlib",  # @manual
-        "fbsource//third-party/pypi/pandas:pandas",  # @manual
-        ":triton_kernel",
         "//caffe2:torch",
     ],
 )
