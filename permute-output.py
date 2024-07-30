@@ -1,7 +1,7 @@
 import torch
 
 # Set tensor print options so we can see the 64x256 result in all its glory
-torch.set_printoptions(sci_mode=False, precision=3, profile="full", linewidth=12*256)
+torch.set_printoptions(sci_mode=False, precision=3, profile="full", linewidth=12 * 256)
 
 # Create a synthetic tensor with 128 threads each holding 128 values
 r = torch.arange(128)[:, None] + torch.arange(128) * 0.001

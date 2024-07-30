@@ -11,20 +11,26 @@ from triton.testing import do_bench, do_bench_cudagraph  # @manual
 
 from triton_kernel import matmul as triton_matmul
 
+
 def to_core_a(x):
     m, n = x.shape
     return x.view(m // 8, 8, n // 8, 8).transpose(1, 2).contiguous().view(m, n)
+
 
 def to_core_b(x):
     m, n = x.shape
     return x.view(m // 8, 8, n // 8, 8).permute(0, 2, 3, 1).contiguous().view(m, n)
 
+
 def from_regs(x):
     return x.view(4, 8, 4, 32, 2, 2).permute(0, 4, 1, 3, 2, 5).reshape(64, 256)
 
+
 def main():
     torch.set_printoptions(profile="full", sci_mode=False)
-    torch.set_printoptions(sci_mode=False, precision=3, profile="full", linewidth=13*256)
+    torch.set_printoptions(
+        sci_mode=False, precision=3, profile="full", linewidth=13 * 256
+    )
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--profile", action="store_true")
@@ -39,8 +45,8 @@ def main():
 
     m, n, k = 64, 256, 16
 
-    #a = torch.eye(m, k, device="cuda").to(torch.bfloat16)
-    #b = torch.arange(n * k, device="cuda").reshape(n, k).bfloat16()
+    # a = torch.eye(m, k, device="cuda").to(torch.bfloat16)
+    # b = torch.arange(n * k, device="cuda").reshape(n, k).bfloat16()
 
     a = torch.randn(m, k, device="cuda").div(4).add(1).sub(1).bfloat16()
     b = torch.randn(k, n, device="cuda").div(4).add(1).sub(1).bfloat16()
